@@ -1,0 +1,710 @@
+/* ============================================================
+   Diario de Estudio — tinta sobre papel
+   Nada de tarjetas flotantes: una sola hoja, con líneas finas
+   que separan las partes. Los números van en monoespaciada
+   (como un libro de cuentas); la prosa, en serif.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --papel: #f3f4f0;
+  --papel-hondo: #e8eae3;
+  --linea: #d9dbcf;
+  --linea-fuerte: #c7cabb;
+  --tinta: #1d2430;
+  --tinta-2: #5f6874;
+  --acento: #2c4a78;
+  --error: #a6301f;
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "DejaVu Serif", serif;
+  --mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 40px 20px 64px;
+  min-height: 100vh;
+  color-scheme: light;
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--tinta);
+  background: var(--papel);
+}
+
+::selection {
+  background: rgba(44, 74, 120, 0.16);
+}
+
+.contenedor {
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+/* ===== Cabecera ===== */
+.cabecera {
+  padding-bottom: 14px;
+  margin-bottom: 26px;
+  border-bottom: 2px solid var(--tinta);
+}
+
+.cabecera h1 {
+  margin: 0;
+  font-size: 1.85rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.subtitulo {
+  margin: 6px 0 0;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--tinta-2);
+}
+
+/* ===== Vistas: pestañas que cambian de página sin recargar ===== */
+.vistas {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--linea);
+}
+
+.vistas a {
+  padding: 9px 13px;
+  font-size: 0.95rem;
+  color: var(--tinta-2);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.vistas a:hover {
+  color: var(--tinta);
+}
+
+.vistas a:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: -2px;
+}
+
+.vistas a[aria-current="page"] {
+  color: var(--tinta);
+  font-weight: 600;
+  border-bottom-color: var(--tinta);
+}
+
+/* Dentro de una vista, la primera sección no lleva línea superior. */
+.vista > .seccion:first-child {
+  padding-top: 20px;
+  border-top: 0;
+}
+
+.vista[hidden] {
+  display: none;
+}
+
+/* ===== Secciones (separadas por una línea fina) ===== */
+.seccion {
+  padding-top: 24px;
+  border-top: 1px solid var(--linea);
+}
+
+.seccion.racha {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.seccion h2 {
+  margin: 0 0 14px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* ===== Racha: el héroe, dibujado con marcas de conteo ===== */
+.marcas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 18px;
+  min-height: 58px;
+  margin-bottom: 14px;
+}
+
+.marca-grupo {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 5px;
+  padding: 0 3px;
+}
+
+.marca-linea {
+  width: 3px;
+  height: 58px;
+  border-radius: 2px;
+  background: var(--tinta);
+  transform: rotate(-1.5deg);
+  transform-origin: bottom center;
+}
+
+.marca-linea:nth-child(2n) {
+  transform: rotate(1.8deg);
+}
+
+.marca-linea:nth-child(3n) {
+  height: 60px;
+  transform: rotate(-0.6deg);
+}
+
+/* El quinto trazo (la cruz) tacha el grupo de cuatro. */
+.marca-cruz {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 68px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--tinta);
+  transform: translate(-50%, -50%) rotate(-62deg);
+}
+
+/* Cuando no hay racha, un guion tenue ocupa el hueco. */
+.marca-guion {
+  font-family: var(--mono);
+  font-size: 1.8rem;
+  line-height: 1;
+  color: var(--linea-fuerte);
+}
+
+.racha-lectura {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+}
+
+.racha-numero {
+  font-family: var(--mono);
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.racha-unidad {
+  color: var(--tinta-2);
+}
+
+.racha-mejor {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  color: var(--tinta-2);
+}
+
+.racha-mejor span {
+  font-family: var(--mono);
+  color: var(--tinta);
+}
+
+/* ===== Estadísticas ===== */
+.estadisticas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.estadistica {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: 18px;
+}
+
+.estadistica + .estadistica {
+  padding-right: 0;
+  padding-left: 18px;
+  border-left: 1px solid var(--linea);
+}
+
+.estadistica-valor {
+  font-family: var(--mono);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.estadistica-etiqueta {
+  font-size: 0.9rem;
+  color: var(--tinta-2);
+}
+
+/* ===== Indicadores del resumen histórico ===== */
+.kpis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 18px;
+}
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kpi-valor {
+  font-family: var(--mono);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.kpi-etiqueta {
+  font-size: 0.88rem;
+  color: var(--tinta-2);
+}
+
+/* ===== Gráficos (SVG dibujado a mano) ===== */
+.grafico {
+  margin: 0;
+}
+
+.grafico-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.grafico-rejilla {
+  stroke: var(--linea);
+  stroke-width: 1;
+}
+
+.grafico-titulo-banda {
+  font-family: var(--serif);
+  font-size: 12px;
+  font-style: italic;
+  fill: var(--tinta-2);
+}
+
+.grafico-eje-y,
+.grafico-eje-x {
+  font-family: var(--mono);
+  font-size: 11px;
+  fill: var(--tinta-2);
+}
+
+.grafico-eje-y {
+  text-anchor: end;
+}
+
+.grafico-eje-x {
+  text-anchor: middle;
+}
+
+.grafico-area {
+  fill: rgba(44, 74, 120, 0.12);
+}
+
+.grafico-linea {
+  fill: none;
+  stroke: var(--acento);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.grafico-punto {
+  fill: var(--acento);
+}
+
+.grafico-barra {
+  fill: var(--tinta-2);
+  opacity: 0.6;
+}
+
+.grafico-vacio {
+  margin: 0;
+  font-style: italic;
+  color: var(--tinta-2);
+}
+
+/* ===== Tarta por tema y su leyenda ===== */
+.pie-envoltorio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.grafico-pie {
+  width: 100%;
+  max-width: 240px;
+}
+
+/* Cada tono sirve para el relleno SVG (fill) y para la muestra de la leyenda. */
+.cuña {
+  stroke: var(--papel);
+  stroke-width: 2;
+}
+
+.cuña-1 { fill: #2c4a78; --color-cuña: #2c4a78; }
+.cuña-2 { fill: #1d2430; --color-cuña: #1d2430; }
+.cuña-3 { fill: #5f6874; --color-cuña: #5f6874; }
+.cuña-4 { fill: #8a6d3b; --color-cuña: #8a6d3b; }
+.cuña-5 { fill: #3f6b58; --color-cuña: #3f6b58; }
+.cuña-6 { fill: #9a9f8e; --color-cuña: #9a9f8e; }
+
+.leyenda {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.leyenda-item {
+  display: grid;
+  grid-template-columns: 13px 1fr auto;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.leyenda-color {
+  width: 12px;
+  height: 12px;
+  align-self: center;
+  border-radius: 2px;
+  background: var(--color-cuña, var(--linea-fuerte));
+}
+
+.leyenda-tema {
+  overflow-wrap: anywhere;
+}
+
+.leyenda-valor {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--tinta-2);
+  white-space: nowrap;
+}
+
+/* La tarta y su leyenda van lado a lado cuando hay sitio. */
+@media (min-width: 560px) {
+  .pie-envoltorio {
+    flex-direction: row;
+    align-items: center;
+    gap: 26px;
+  }
+
+  .leyenda {
+    width: auto;
+    flex: 1;
+  }
+}
+
+/* ===== Formulario: se escribe sobre la línea ===== */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 18px;
+}
+
+.campo label {
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  color: var(--tinta-2);
+}
+
+.campo input {
+  width: 100%;
+  min-width: 0;
+  padding: 7px 2px;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  color: var(--tinta);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--linea-fuerte);
+  border-radius: 0;
+}
+
+/* Fecha y minutos son cifras: van en monoespaciada. */
+#fecha,
+#minutos {
+  font-family: var(--mono);
+  letter-spacing: -0.01em;
+}
+
+.campo input::placeholder {
+  color: #a9ada1;
+  font-style: italic;
+}
+
+.campo input:focus {
+  outline: none;
+  border-bottom-color: var(--acento);
+  box-shadow: 0 1px 0 0 var(--acento);
+}
+
+.error {
+  margin: 0 0 14px;
+  padding-left: 12px;
+  border-left: 3px solid var(--error);
+  font-size: 0.95rem;
+  color: var(--error);
+}
+
+button {
+  width: 100%;
+  margin-top: 2px;
+  padding: 12px 16px;
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--papel);
+  background: var(--tinta);
+  border: 1px solid var(--tinta);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+button:hover {
+  background: var(--acento);
+  border-color: var(--acento);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}
+
+/* Botones del formulario (guardar / cancelar). */
+.acciones-formulario {
+  display: flex;
+  gap: 10px;
+}
+
+.acciones-formulario button {
+  width: auto;
+}
+
+.acciones-formulario #guardar {
+  flex: 1;
+}
+
+.boton-secundario {
+  color: var(--tinta);
+  background: transparent;
+  border-color: var(--linea-fuerte);
+}
+
+.boton-secundario:hover {
+  color: var(--tinta);
+  background: var(--papel-hondo);
+  border-color: var(--tinta-2);
+}
+
+/* ===== Sesiones: un libro de entradas ===== */
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sesion {
+  display: grid;
+  grid-template-columns: 5.6rem 1fr auto auto;
+  align-items: baseline;
+  gap: 14px;
+  padding: 11px 0;
+  border-top: 1px solid var(--linea);
+}
+
+.sesion:first-child {
+  border-top: 0;
+}
+
+/* Fila que se está editando en el formulario. */
+.sesion.editando {
+  background: rgba(44, 74, 120, 0.05);
+}
+
+/* La fecha queda en el margen, separada del contenido por una línea. */
+.sesion-fecha {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--tinta-2);
+  padding-right: 12px;
+  border-right: 1px solid var(--linea);
+  white-space: nowrap;
+}
+
+.sesion-tema {
+  font-size: 1.02rem;
+  overflow-wrap: anywhere;
+}
+
+.sesion-minutos {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  color: var(--tinta-2);
+  white-space: nowrap;
+}
+
+.sesion-acciones {
+  display: flex;
+  align-self: center;
+  gap: 2px;
+}
+
+/* Botones de icono de cada fila (editar / borrar). */
+.boton-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  color: var(--tinta-2);
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.boton-icono svg {
+  display: block;
+  width: 17px;
+  height: 17px;
+}
+
+.boton-icono:hover {
+  color: var(--tinta);
+  background: var(--papel-hondo);
+}
+
+.boton-icono.peligro:hover {
+  color: var(--error);
+  background: #f3e2df;
+}
+
+.boton-icono:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 1px;
+}
+
+.vacio {
+  margin: 0;
+  font-style: italic;
+  color: var(--tinta-2);
+}
+
+/* Solo para lectores de pantalla. */
+.sr-solo {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===== Movimiento: solo las marcas se "dibujan" al aparecer =====
+   Con clip-path: si la animación no corre o hay reduced-motion,
+   las marcas se ven igual (no desaparecen). */
+@media (prefers-reduced-motion: no-preference) {
+  .marca-linea {
+    animation: marca-crece 240ms ease-out backwards;
+  }
+
+  .marca-grupo .marca-linea:nth-child(2) {
+    animation-delay: 45ms;
+  }
+
+  .marca-grupo .marca-linea:nth-child(3) {
+    animation-delay: 90ms;
+  }
+
+  .marca-grupo .marca-linea:nth-child(4) {
+    animation-delay: 135ms;
+  }
+
+  .marca-cruz {
+    animation: marca-cruz-aparece 180ms ease-out 170ms backwards;
+  }
+}
+
+/* Se revela de abajo hacia arriba, como trazada a mano. */
+@keyframes marca-crece {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+}
+
+@keyframes marca-cruz-aparece {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ===== Pantallas estrechas ===== */
+@media (max-width: 420px) {
+  body {
+    padding: 26px 16px 48px;
+  }
+
+  .cabecera h1 {
+    font-size: 1.5rem;
+  }
+
+  .sesion {
+    grid-template-columns: 4.5rem 1fr auto;
+    grid-template-areas:
+      "fecha tema minutos"
+      "fecha tema acciones";
+    column-gap: 10px;
+    row-gap: 4px;
+  }
+
+  .sesion-fecha {
+    grid-area: fecha;
+    align-self: stretch; /* la regla del margen recorre las dos líneas */
+  }
+
+  .sesion-tema {
+    grid-area: tema;
+  }
+
+  .sesion-minutos {
+    grid-area: minutos;
+  }
+
+  .sesion-acciones {
+    grid-area: acciones;
+    justify-self: end;
+  }
+}

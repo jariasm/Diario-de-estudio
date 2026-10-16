@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diario de Estudio</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="contenedor">
+    <header class="cabecera">
+      <h1>Diario de Estudio</h1>
+      <p class="subtitulo">Registra tus sesiones y mira crecer tu racha</p>
+    </header>
+
+    <!-- Dos vistas: registrar y estadísticas (se cambian con el hash de la URL). -->
+    <nav class="vistas" aria-label="Vistas">
+      <a href="#registro" id="enlace-registro" aria-current="page">Registrar</a>
+      <a href="#estadisticas" id="enlace-estadisticas">Estadísticas</a>
+    </nav>
+
+    <div class="vista" id="vista-registro">
+      <!-- Racha -->
+      <section class="seccion racha" aria-label="Rachas">
+        <div class="marcas" id="racha-marcas" aria-hidden="true"></div>
+        <p class="racha-lectura">
+          <span class="racha-numero" id="racha-numero">0</span>
+          <span class="racha-unidad" id="racha-unidad">días seguidos</span>
+        </p>
+        <p class="racha-mejor">
+          Mejor racha: <span id="mejor-racha-numero">0</span>
+          <span id="mejor-racha-unidad">días</span>
+        </p>
+      </section>
+
+      <!-- Formulario para registrar o editar una sesión -->
+      <section class="seccion">
+        <h2 id="titulo-sesion">Nueva sesión</h2>
+        <form id="formulario" novalidate>
+          <div class="campo">
+            <label for="fecha">Fecha</label>
+            <input type="date" id="fecha" name="fecha" required />
+          </div>
+
+          <div class="campo">
+            <label for="tema">Tema</label>
+            <input
+              type="text"
+              id="tema"
+              name="tema"
+              placeholder="¿Qué estudiaste?"
+              required
+            />
+          </div>
+
+          <div class="campo">
+            <label for="minutos">Minutos</label>
+            <input
+              type="number"
+              id="minutos"
+              name="minutos"
+              min="1"
+              step="1"
+              placeholder="Ej: 30"
+              required
+            />
+          </div>
+
+          <p class="error" id="error" role="alert" hidden></p>
+
+          <div class="acciones-formulario">
+            <button type="submit" id="guardar">Guardar sesión</button>
+            <button type="button" id="cancelar" class="boton-secundario" hidden>Cancelar</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Lista de sesiones -->
+      <section class="seccion">
+        <h2>Mis sesiones</h2>
+        <p class="vacio" id="mensaje-vacio">Aún no hay sesiones. Registra la primera y aparecerá aquí.</p>
+        <ul class="lista" id="lista-sesiones"></ul>
+      </section>
+    </div>
+
+    <div class="vista" id="vista-estadisticas" hidden>
+      <!-- Resumen histórico -->
+      <section class="seccion" aria-label="Resumen">
+        <h2>Resumen</h2>
+        <div class="kpis">
+          <div class="kpi">
+            <span class="kpi-valor" id="kpi-total">0 min</span>
+            <span class="kpi-etiqueta">estudiado en total</span>
+          </div>
+          <div class="kpi">
+            <span class="kpi-valor" id="kpi-dias">0</span>
+            <span class="kpi-etiqueta">días estudiados</span>
+          </div>
+          <div class="kpi">
+            <span class="kpi-valor" id="kpi-media">0 min</span>
+            <span class="kpi-etiqueta">de media al día</span>
+          </div>
+          <div class="kpi">
+            <span class="kpi-valor" id="kpi-mejor">—</span>
+            <span class="kpi-etiqueta" id="kpi-mejor-fecha">mejor día</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Totales del periodo en curso -->
+      <section class="seccion estadisticas" aria-label="Totales actuales">
+        <h2>Totales actuales</h2>
+        <div class="estadisticas-grid">
+          <div class="estadistica">
+            <span class="estadistica-valor" id="minutos-semana">0 min</span>
+            <span class="estadistica-etiqueta">esta semana</span>
+          </div>
+          <div class="estadistica">
+            <span class="estadistica-valor" id="dias-mes">0 días</span>
+            <span class="estadistica-etiqueta">este mes</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tendencia de los últimos 30 días -->
+      <section class="seccion" aria-label="Tendencia de los últimos 30 días">
+        <h2>Tendencia · últimos 30 días</h2>
+        <div class="grafico" id="grafico-tendencia"></div>
+        <p class="grafico-vacio" id="tendencia-vacio" hidden>Aún no hay sesiones que dibujar. Registra una y vuelve aquí.</p>
+      </section>
+
+      <!-- Reparto del tiempo por tema -->
+      <section class="seccion" aria-label="Reparto por tema">
+        <h2>Reparto por tema</h2>
+        <div class="pie-envoltorio">
+          <div class="grafico grafico-pie" id="grafico-pie"></div>
+          <ul class="leyenda" id="leyenda-pie"></ul>
+        </div>
+        <p class="grafico-vacio" id="pie-vacio" hidden>Aún no hay minutos que repartir.</p>
+      </section>
+    </div>
+
+    <!-- Anuncios para lectores de pantalla (no se ve) -->
+    <p class="sr-solo" id="aviso" role="status" aria-live="polite"></p>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
